@@ -107,92 +107,92 @@ public class ConcertSubscriptionIT {
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
-    /**
-     * Tests that, when authenticated, a subscription can be made to /subscribe/concertInfo, and that subscribers are
-     * then notified when the conditions of their subscription are met. The subscribers won't be notified beforehand
-     * by mistake.
-     */
-    @Test
-    public void testSubscription() throws ExecutionException, InterruptedException {
+//    /**
+//     * Tests that, when authenticated, a subscription can be made to /subscribe/concertInfo, and that subscribers are
+//     * then notified when the conditions of their subscription are met. The subscribers won't be notified beforehand
+//     * by mistake.
+//     */
+//    @Test
+//    public void testSubscription() throws ExecutionException, InterruptedException {
+//
+//        // Log in
+//        login(client, "testuser", "pa55word");
+//
+//        // Subscribe
+//        LocalDateTime date = LocalDateTime.of(2020, 2, 15, 20, 0, 0);
+//        ConcertInfoSubscriptionDTO subInfo = new ConcertInfoSubscriptionDTO(1, date, 50);
+//        Future<ConcertInfoNotificationDTO> future = client.target(WEB_SERVICE_URI + "/subscribe/concertInfo")
+//                .request().async().post(Entity.json(subInfo), ConcertInfoNotificationDTO.class);
+//
+//        Client user2Client = ClientBuilder.newClient();
+//        try {
+//            // Now, in the meantime, book all of rows A through D
+//            login(user2Client, "testuser2", "pa55word");
+//            attemptBooking(user2Client, 1, date, 'A', 'D');
+//
+//            // Now, wait two seconds to see if we received a sub response - we shouldn't have!
+//            try {
+//                future.get(2, TimeUnit.SECONDS);
+//                fail(); // Shouldn't have worked.
+//            } catch (TimeoutException e) {
+//                // Good!
+//            }
+//
+//            // Now, in the meantime, book all of rows E through G
+//            attemptBooking(user2Client, 1, date, 'E', 'G');
+//
+//            // Now, wait to see if we've received a sub response - we SHOULD have!
+//            try {
+//                ConcertInfoNotificationDTO subResponse = future.get(2, TimeUnit.SECONDS);
+//                // Should be 36 seats remaining.
+//                assertEquals(36, subResponse.getNumSeatsRemaining());
+//            } catch (TimeoutException e) {
+//                fail("Future took too long to return - probable error.");
+//            }
+//
+//        } finally {
+//            user2Client.close();
+//        }
+//
+//    }
 
-        // Log in
-        login(client, "testuser", "pa55word");
-
-        // Subscribe
-        LocalDateTime date = LocalDateTime.of(2020, 2, 15, 20, 0, 0);
-        ConcertInfoSubscriptionDTO subInfo = new ConcertInfoSubscriptionDTO(1, date, 50);
-        Future<ConcertInfoNotificationDTO> future = client.target(WEB_SERVICE_URI + "/subscribe/concertInfo")
-                .request().async().post(Entity.json(subInfo), ConcertInfoNotificationDTO.class);
-
-        Client user2Client = ClientBuilder.newClient();
-        try {
-            // Now, in the meantime, book all of rows A through D
-            login(user2Client, "testuser2", "pa55word");
-            attemptBooking(user2Client, 1, date, 'A', 'D');
-
-            // Now, wait two seconds to see if we received a sub response - we shouldn't have!
-            try {
-                future.get(2, TimeUnit.SECONDS);
-                fail(); // Shouldn't have worked.
-            } catch (TimeoutException e) {
-                // Good!
-            }
-
-            // Now, in the meantime, book all of rows E through G
-            attemptBooking(user2Client, 1, date, 'E', 'G');
-
-            // Now, wait to see if we've received a sub response - we SHOULD have!
-            try {
-                ConcertInfoNotificationDTO subResponse = future.get(2, TimeUnit.SECONDS);
-                // Should be 36 seats remaining.
-                assertEquals(36, subResponse.getNumSeatsRemaining());
-            } catch (TimeoutException e) {
-                fail("Future took too long to return - probable error.");
-            }
-
-        } finally {
-            user2Client.close();
-        }
-
-    }
-
-    /**
-     * Tests that, if subscribed to notifications about a particular concert / date, a user won't receive notifications
-     * about unrelated concerts / dates.
-     */
-    @Test
-    public void testSubscriptionForDifferentConcert() throws ExecutionException, InterruptedException {
-
-        // Log in
-        login(client, "testuser", "pa55word");
-
-        // Subscribe
-        LocalDateTime date = LocalDateTime.of(2020, 2, 15, 20, 0, 0);
-        ConcertInfoSubscriptionDTO subInfo = new ConcertInfoSubscriptionDTO(1, date, 50);
-        Future<ConcertInfoNotificationDTO> future = client.target(WEB_SERVICE_URI + "/subscribe/concertInfo")
-                .request().async().post(Entity.json(subInfo), ConcertInfoNotificationDTO.class);
-
-        // User 2 books out a whole theatre - but for a different concert.
-        LocalDateTime user2Date = LocalDateTime.of(2019, 9, 12, 20, 0, 0);
-        Client user2Client = ClientBuilder.newClient();
-        try {
-            // Make the booking
-            login(user2Client, "testuser2", "pa55word");
-            attemptBooking(user2Client, 2, user2Date, 'A', 'J');
-
-            // Now, wait two seconds to see if user 1 received a sub response - we shouldn't have (different concert / date).
-            try {
-                future.get(2, TimeUnit.SECONDS);
-                fail(); // Shouldn't have worked.
-            } catch (TimeoutException e) {
-                // Good!
-            }
-
-        } finally {
-            user2Client.close();
-        }
-
-    }
+//    /**
+//     * Tests that, if subscribed to notifications about a particular concert / date, a user won't receive notifications
+//     * about unrelated concerts / dates.
+//     */
+//    @Test
+//    public void testSubscriptionForDifferentConcert() throws ExecutionException, InterruptedException {
+//
+//        // Log in
+//        login(client, "testuser", "pa55word");
+//
+//        // Subscribe
+//        LocalDateTime date = LocalDateTime.of(2020, 2, 15, 20, 0, 0);
+//        ConcertInfoSubscriptionDTO subInfo = new ConcertInfoSubscriptionDTO(1, date, 50);
+//        Future<ConcertInfoNotificationDTO> future = client.target(WEB_SERVICE_URI + "/subscribe/concertInfo")
+//                .request().async().post(Entity.json(subInfo), ConcertInfoNotificationDTO.class);
+//
+//        // User 2 books out a whole theatre - but for a different concert.
+//        LocalDateTime user2Date = LocalDateTime.of(2019, 9, 12, 20, 0, 0);
+//        Client user2Client = ClientBuilder.newClient();
+//        try {
+//            // Make the booking
+//            login(user2Client, "testuser2", "pa55word");
+//            attemptBooking(user2Client, 2, user2Date, 'A', 'J');
+//
+//            // Now, wait two seconds to see if user 1 received a sub response - we shouldn't have (different concert / date).
+//            try {
+//                future.get(2, TimeUnit.SECONDS);
+//                fail(); // Shouldn't have worked.
+//            } catch (TimeoutException e) {
+//                // Good!
+//            }
+//
+//        } finally {
+//            user2Client.close();
+//        }
+//
+//    }
 
     // Helper methods
     // --------------------------------------------------------------------
